@@ -43,13 +43,13 @@ export function Home() {
   };
 
   const chartData = useMemo(() => {
-    const recentData = financialData.slice(-16);
+    // 显示从2014年至今的完整数据
     return {
-      labels: recentData.map(d => d.date),
-      netProfit: recentData.map(d => d.netProfit),
-      revenue: recentData.map(d => d.revenue),
-      roe: recentData.map(d => d.roe),
-      grossMargin: recentData.map(d => d.grossMargin),
+      labels: financialData.map(d => d.date),
+      netProfit: financialData.map(d => d.netProfit),
+      revenue: financialData.map(d => d.revenue),
+      roe: financialData.map(d => d.roe),
+      grossMargin: financialData.map(d => d.grossMargin),
     };
   }, [financialData]);
 
