@@ -31,11 +31,19 @@ export function Home() {
 
   const calculateChange = (current: number, prev: number) => {
     if (!prev) return 0;
-    return ((current - prev) / prev) * 100;
+    return ((current - prev) / Math.abs(prev)) * 100;
+  };
+
+  const formatPE = (pe: number) => {
+    return pe === 0 ? '-' : pe.toFixed(2);
+  };
+
+  const formatCashFlow = (cf: number) => {
+    return cf.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   const chartData = useMemo(() => {
-    const recentData = financialData.slice(-12);
+    const recentData = financialData.slice(-16);
     return {
       labels: recentData.map(d => d.date),
       netProfit: recentData.map(d => d.netProfit),
@@ -43,6 +51,14 @@ export function Home() {
       roe: recentData.map(d => d.roe),
       grossMargin: recentData.map(d => d.grossMargin),
     };
+  }, [financialData]);
+
+  // 确定数据年份范围
+  const dataRange = useMemo(() => {
+    if (financialData.length === 0) return '-';
+    const first = financialData[0].year;
+    const last = financialData[financialData.length - 1].year;
+    return first === last ? `${first}` : `${first}-${last}`;
   }, [financialData]);
 
   if (loading && !latest) {
@@ -91,7 +107,7 @@ export function Home() {
     },
     {
       title: '现金流',
-      value: latest?.cashFlow?.toLocaleString() || '-',
+      value: latest ? formatCashFlow(latest.cashFlow) : '-',
       unit: '亿元',
       change: previous && latest ? calculateChange(latest.cashFlow, previous.cashFlow) : 0,
       icon: <Activity size={24} />,
@@ -99,7 +115,7 @@ export function Home() {
     },
     {
       title: '市盈率 (PE)',
-      value: latest?.peRatio?.toFixed(2) || '-',
+      value: latest ? formatPE(latest.peRatio) : '-',
       change: previous && latest ? calculateChange(latest.peRatio, previous.peRatio) : 0,
       icon: <Activity size={24} />,
       color: '#f43f5e',
@@ -221,8 +237,9 @@ export function Home() {
           数据源说明
         </h4>
         <p className="text-slate-400 text-sm">
-          当前数据包含牧原股份(002714) 2014-2025年季度财务报表数据，以及2018-2025年月度能繁母猪存栏数据。
-          数据基于公开信息整理，缓存时间为1小时。如需接入实时数据，请配置相应的财经数据API。
+          当前数据包含牧原股份(002714) {dataRange}年季度财务报表数据，以及2018-2026年月度能繁母猪存栏数据。
+          财务数据截至2026年Q1（2026年4月底披露），母猪数据截至2026年5月。
+          数据基于公开信息整理，缓存时间为1小时。点击「刷新数据」按钮可从东方财富等公开数据源获取最新数据。
         </p>
       </div>
     </div>

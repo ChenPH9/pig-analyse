@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useStore } from '../store/useStore';
 import { LineChart } from '../components/LineChart';
-import { Download, Filter } from 'lucide-react';
+import { Filter } from 'lucide-react';
 
 export function Reports() {
   const { financialData, fetchFinancialData } = useStore();
@@ -203,7 +203,7 @@ export function Reports() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <span className="text-slate-300 font-mono">
-                      {item.peRatio.toFixed(2)}
+                      {item.peRatio === 0 ? '-' : item.peRatio.toFixed(2)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
