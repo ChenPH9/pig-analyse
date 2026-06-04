@@ -2,6 +2,7 @@
  * local server entry file, for local development
  */
 import app from './app.js';
+import { DataScheduler } from './services/scheduler.js';
 
 /**
  * start server with port
@@ -10,6 +11,11 @@ const PORT = process.env.PORT || 3001;
 
 const server = app.listen(PORT, () => {
   console.log(`Server ready on port ${PORT}`);
+  
+  const scheduler = DataScheduler.getInstance();
+  scheduler.start();
+  
+  console.log('System initialized');
 });
 
 /**

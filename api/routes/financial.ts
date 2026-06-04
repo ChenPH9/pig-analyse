@@ -3,8 +3,10 @@ import {
   fetchFinancialData, 
   fetchSowData, 
   refreshCache, 
-  getCacheStatus 
+  getCacheStatus,
+  loadFromBackup
 } from '../services/scraper.js';
+import { DataScheduler } from '../services/scheduler.js';
 
 const router = Router();
 
@@ -78,6 +80,55 @@ router.get('/cache-status', (req, res) => {
     res.status(500).json({
       success: false,
       error: '获取缓存状态失败',
+    });
+  }
+});
+
+// 获取调度器状态
+router.get('/scheduler/status', (req, res) => {
+  try {
+    const scheduler = DataScheduler.getInstance();
+    res.json({
+      success: true,
+      status: scheduler.getStatus(),
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: '获取调度器状态失败',
+    });
+  }
+});
+
+// 手动触发数据更新
+router.post('/scheduler/trigger', async (req, res) => {
+  try {
+    const scheduler = DataScheduler.getInstance();
+    await scheduler.triggerManualUpdate();
+    res.json({
+      success: true,
+      message: '手动更新已触发',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: '触发更新失败',
+    });
+  }
+});
+
+// 获取备份数据
+router.get('/backup', async (req, res) => {
+  try {
+    const backup = await loadFromBackup();
+    res.json({
+      success: true,
+      backup,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: '获取备份失败',
     });
   }
 });
